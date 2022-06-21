@@ -16,12 +16,10 @@ CFLAGS = -Wall -Werror -Wextra
 
 SRCS =	pipex.c \
 		exec.c \
+		pipex_utils.c \
+		ft_split.c
 
 HEADERS_DIR = ./
-
-LIB_DIR = libft/
-
-LIB = libft.a
 
 NAME = pipex
 
@@ -31,16 +29,16 @@ all:		$(NAME)
 
 
 $(NAME):	$(OBJS)
-				make -C $(LIB_DIR)
-				$(CC) $(CFLAGS) -I$(HEADERS_DIR) -o $(NAME) $(OBJS) $(LIB_DIR)$(LIB)
+				@printf "\e[33mcompiling %s...\e[0m\n" $(NAME)
+				@$(CC) $(CFLAGS) -I$(HEADERS_DIR) -o $(NAME) $(OBJS)
 
 clean:
-				make -C $(LIB_DIR) clean
-				rm -f $(OBJS)
+				@printf "\e[33mcleaning object files...\e[0m\n"
+				@rm -f $(OBJS)
 
 fclean:		clean
-				make -C $(LIB_DIR) fclean
-				rm -rf $(NAME)				
+				@printf "\e[33mcleaning binary files...\e[0m\n"
+				@rm -rf $(NAME)
 
 re:			fclean all
 
