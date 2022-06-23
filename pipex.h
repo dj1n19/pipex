@@ -21,6 +21,7 @@
 # include <sys/wait.h>
 # define E_ARG "bad argument"
 # define E_PARSE "command parse failed"
+
 typedef struct s_command
 {
 	char	**cmd1;

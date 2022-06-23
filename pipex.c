@@ -73,7 +73,8 @@ void	ft_error(char *err, t_cmd *cmd)
 	exit(EXIT_FAILURE);
 }
 
-void ft_free_ptr_array(void **ptr_array) {
+void	ft_free_ptr_array(void **ptr_array)
+{
 	int	i;
 
 	i = 0;
