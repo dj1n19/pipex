@@ -25,12 +25,20 @@ NAME = pipex
 
 OBJS = $(SRCS:.c=.o)
 
+LEAKS_S = leaks.c
+
+LEAKS_O = $(LEAKS_S:.c=.o)
+
 all:		$(NAME)
 
 
 $(NAME):	$(OBJS)
 				@printf "\e[33mcompiling %s...\e[0m\n" $(NAME)
 				@$(CC) $(CFLAGS) -I$(HEADERS_DIR) -o $(NAME) $(OBJS)
+
+leaks:		$(OBJS) $(LEAKS_O)
+				@printf "\e[33mcompiling %s with leaks check...\e[0m\n" $(NAME)
+				@$(CC) $(CFLAGS) -I$(HEADERS_DIR) -o $(NAME) $(OBJS) $(LEAKS_O)
 
 clean:
 				@printf "\e[33mcleaning object files...\e[0m\n"

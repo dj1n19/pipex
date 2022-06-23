@@ -16,71 +16,86 @@ static char	**get_path(char **envp)
 {
 	int		i;
 	char	**path;
+	char	*path_val;
+	char	*envp_save;
 
 	if (!envp)
 		return (NULL);
 	i = 0;
 	while (ft_strncmp(envp[i], "PATH", 4))
 		i++;
+	envp_save = envp[i];
 	envp[i] = ft_strjoin(envp[i], ":.");
-	path = ft_split(ft_substr(envp[i], 5, ft_strlen(envp[i]) - 5), ':');
+	path_val = ft_substr(envp[i], 5, ft_strlen(envp[i]) - 5);
+	path = ft_split(path_val, ':');
+	free(envp[i]);
+	envp[i] = envp_save;
+	free(path_val);
 	return (path);
 }
 
-static int	exec_cmd(t_cmd *cmd, char **envp)
+static char	*make_cmd(char **cmd, char **envp)
 {
 	char	**path;
 	char	*cmd_path;
+	char	*path_w_slash;
 	int		ret;
 	int		i;
 
 	i = 0;
 	path = get_path(envp);
 	if (!path)
-		return (-1);
+		return (NULL);
 	ret = -1;
 	while (path[i])
 	{
-		cmd_path = ft_strjoin(ft_strjoin(path[i++], "/"), cmd->cmd_name);
+		path_w_slash = ft_strjoin(path[i++], "/");
+		cmd_path = ft_strjoin(path_w_slash, cmd[0]);
+		free(path_w_slash);
 		ret = access(cmd_path, X_OK);
 		if (ret == 0)
 			break ;
 		free(cmd_path);
 	}
-	i = 0;
-	while (path[i])
-		free(path[i++]);
-	free(path);
+	ft_free_ptr_array((void **)path);
 	if (ret == -1)
-		ft_error(NULL, cmd, NULL);
-	return (execve(cmd_path, cmd->cmd_args, envp));
+		return (NULL);
+	return (cmd_path);
 }
 
 void	ft_child_process(t_cmd *cmd, int p[2], char **envp)
 {
-	if (dup2(cmd->fd, STDIN_FILENO) == -1)
-		ft_error(NULL, cmd, NULL);
+	char	*cmd_path;
+
+	if (dup2(cmd->fd1, STDIN_FILENO) == -1)
+		ft_error(NULL, cmd);
 	if (dup2(p[1], STDOUT_FILENO) == -1)
-		ft_error(NULL, cmd, NULL);
+		ft_error(NULL, cmd);
 	close(p[0]);
-	close(cmd->fd);
-	if (exec_cmd(cmd, envp) == -1)
-		ft_error(NULL, cmd, NULL);
-	system("leaks pipex");
+	close(cmd->fd1);
+	cmd_path = make_cmd(cmd->cmd1, envp);
+	if (execve(cmd_path, cmd->cmd1, envp) == -1)
+	{
+		ft_error(NULL, cmd);
+	}
 }
 
-void	ft_parent_process(t_cmd *cmd, int p[2], char **envp, pid_t child)
+int	ft_parent_process(t_cmd *cmd, int p[2], char **envp, pid_t child)
 {
-	int	status;
+	int		status;
+	char	*cmd_path;
 
-	if (dup2(cmd->fd, STDOUT_FILENO) == -1)
-		ft_error(NULL, cmd, NULL);
+	if (dup2(cmd->fd2, STDOUT_FILENO) == -1)
+		ft_error(NULL, cmd);
 	if (dup2(p[0], STDIN_FILENO) == -1)
-		ft_error(NULL, cmd, NULL);
+		ft_error(NULL, cmd);
 	close(p[1]);
-	close(cmd->fd);
+	close(cmd->fd2);
 	waitpid(child, &status, 0);
-	if (exec_cmd(cmd, envp) == -1)
-		ft_error(NULL, cmd, NULL);
-	system("leaks pipex");
+	cmd_path = make_cmd(cmd->cmd2, envp);
+	if (execve(cmd_path, cmd->cmd2, envp) == -1)
+	{
+		ft_error(NULL, cmd);
+	}
+	return (0);
 }

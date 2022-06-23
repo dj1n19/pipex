@@ -18,20 +18,21 @@
 # include <stdio.h>
 # include <string.h>
 # include <sys/errno.h>
+# include <sys/wait.h>
 # define E_ARG "bad argument"
-# define E_MALLOC "malloc failed"
-
+# define E_PARSE "command parse failed"
 typedef struct s_command
 {
-	char	*cmd_name;
-	char	**cmd_args;
-	int		fd;
+	char	**cmd1;
+	char	**cmd2;
+	int		fd1;
+	int		fd2;
 }	t_cmd;
 
-void	ft_error(char *err, t_cmd *cmd1, t_cmd *cmd2);
-void	ft_free(t_cmd *cmd1, t_cmd *cmd2);
+void	ft_error(char *err, t_cmd *cmd1);
+void	ft_free_ptr_array(void **ptr_array);
 void	ft_child_process(t_cmd *cmd, int p[2], char **envp);
-void	ft_parent_process(t_cmd *cmd, int p[2], char **envp, pid_t child);
+int		ft_parent_process(t_cmd *cmd, int p[2], char **envp, pid_t child);
 char	*ft_substr(const char *s, unsigned int start, size_t len);
 char	**ft_split(const char *s, char c);
 char	*ft_strjoin(const char *s1, const char *s2);
