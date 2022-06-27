@@ -16,9 +16,6 @@
 # include <unistd.h>
 # include <fcntl.h>
 # include <stdio.h>
-# include <string.h>
-# include <sys/errno.h>
-# include <sys/wait.h>
 # define E_ARG "bad argument"
 # define E_PARSE "command parse failed"
 

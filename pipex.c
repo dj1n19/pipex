@@ -46,7 +46,7 @@ static void	open_file(char **argv, t_cmd *cmd)
 	cmd->fd1 = open(argv[1], O_RDONLY);
 	if (cmd->fd1 < 0)
 		ft_error(NULL, cmd);
-	cmd->fd2 = open(argv[4], O_WRONLY | O_CREAT, 0644);
+	cmd->fd2 = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (cmd->fd2 < 0)
 	{
 		close(cmd->fd1);

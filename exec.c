@@ -85,13 +85,13 @@ int	ft_parent_process(t_cmd *cmd, int p[2], char **envp, pid_t child)
 	int		status;
 	char	*cmd_path;
 
+	waitpid(child, &status, 0);
 	if (dup2(cmd->fd2, STDOUT_FILENO) == -1)
 		ft_error(NULL, cmd);
 	if (dup2(p[0], STDIN_FILENO) == -1)
 		ft_error(NULL, cmd);
 	close(p[1]);
 	close(cmd->fd2);
-	waitpid(child, &status, 0);
 	cmd_path = make_cmd(cmd->cmd2, envp);
 	if (execve(cmd_path, cmd->cmd2, envp) == -1)
 	{
